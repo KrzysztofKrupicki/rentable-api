@@ -9,7 +9,11 @@ from jose import jwt
 from pydantic import UUID4
 
 from src.container import Container
-from src.core.domain.equipment_review import EquipmentReview, EquipmentReviewIn
+from src.core.domain.equipment_review import (
+    EquipmentReview,
+    EquipmentReviewIn,
+    EquipmentReviewBroker,
+)
 from src.infrastructure.dto.equipment_reviewdto import EquipmentReviewDTO
 from src.infrastructure.services.iequipment_review import IEquipmentReviewService
 from src.infrastructure.utils import consts
@@ -22,7 +26,9 @@ router = APIRouter()
 @inject
 async def create_equipment_review(
     review: EquipmentReviewIn,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> dict:
     """An endpoint for adding new equipment review.
@@ -31,6 +37,9 @@ async def create_equipment_review(
         review (EquipmentReviewIn): The equipment review data.
         service (IEquipmentReviewService, optional): The injected equipment review dependency.
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
+
+    Raises:
+        HTTPException: 403 if unauthorized.
 
     Returns:
         dict: The created equipment review attributes.
@@ -45,20 +54,24 @@ async def create_equipment_review(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
-    extended_equipment_review_data = EquipmentReview(
+
+    extended_equipment_review_data = EquipmentReviewBroker(
         reviewer_id=user_uuid,
         **review.model_dump(),
-       )
+    )
 
-    if new_equipment_review := await service.add_equipment_review(extended_equipment_review_data):
+    if new_equipment_review := await service.add_equipment_review(
+        extended_equipment_review_data
+    ):
         return new_equipment_review.model_dump()
 
 
 @router.get("/all", response_model=Iterable[EquipmentReview], status_code=200)
 @inject
 async def get_all_equipment_reviews(
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
 ) -> Iterable[dict]:
     """An endpoint for getting all equipment reviews.
 
@@ -76,7 +89,9 @@ async def get_all_equipment_reviews(
 @inject
 async def get_equipment_review_by_id(
     equipment_review_id: int,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
 ) -> dict:
     """An endpoint for getting equipment review by id.
 
@@ -103,17 +118,20 @@ async def get_equipment_review_by_id(
 @inject
 async def delete_equipment_review(
     equipment_review_id: int,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> None:
     """An endpoint for deleting equipment review.
 
     Args:
         equipment_review_id (int): The equipment review id.
-        service (IEquipmentReviewService, optional): The injected equipment review dependency.  
+        service (IEquipmentReviewService, optional): The injected equipment review dependency.
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
 
     Raises:
+        HTTPException: 403 if unauthorized.
         HTTPException: 404 if equipment review does not exist.
     """
     token = credentials.credentials
@@ -126,26 +144,34 @@ async def delete_equipment_review(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
-    if review_data := await service.get_equipment_review_by_id(equipment_review_id=equipment_review_id):
-        if(str(review_data.reviewer_id) != user_uuid):
+
+    if review_data := await service.get_equipment_review_by_id(
+        equipment_review_id=equipment_review_id
+    ):
+        if str(review_data.reviewer_id) != user_uuid:
             raise HTTPException(status_code=403, detail="Unauthorized")
 
     if await service.get_equipment_review_by_id(equipment_review_id):
         await service.delete_equipment_review(equipment_review_id)
         return
-    
+
     raise HTTPException(
         status_code=404,
         detail="Equipment review not found",
     )
 
 
-@router.get("/equipment/{equipment_id}", response_model=Iterable[EquipmentReview], status_code=200)
+@router.get(
+    "/equipment/{equipment_id}",
+    response_model=Iterable[EquipmentReview],
+    status_code=200,
+)
 @inject
 async def get_reviews_by_equipment_id(
     equipment_id: int,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
 ) -> Iterable[dict]:
     """An endpoint for getting reviews by equipment id.
 
@@ -161,11 +187,15 @@ async def get_reviews_by_equipment_id(
     return []
 
 
-@router.get("/reviewer/{reviewer_id}", response_model=Iterable[EquipmentReview], status_code=200)
+@router.get(
+    "/reviewer/{reviewer_id}", response_model=Iterable[EquipmentReview], status_code=200
+)
 @inject
 async def get_reviews_by_reviewer_id(
     reviewer_id: UUID4,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
 ) -> Iterable[dict]:
     """An endpoint for getting reviews by reviewer id.
 
@@ -185,7 +215,9 @@ async def get_reviews_by_reviewer_id(
 @inject
 async def get_average_rating_for_equipment(
     equipment_id: int,
-    service: IEquipmentReviewService = Depends(Provide[Container.equipment_review_service]),
+    service: IEquipmentReviewService = Depends(
+        Provide[Container.equipment_review_service]
+    ),
 ) -> float:
     """An endpoint for getting average rating for equipment.
 

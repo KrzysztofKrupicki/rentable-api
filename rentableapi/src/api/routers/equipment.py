@@ -16,6 +16,7 @@ from src.infrastructure.utils import consts
 router = APIRouter()
 bearer_scheme = HTTPBearer()
 
+
 @router.post("/create", response_model=Equipment, status_code=201)
 @inject
 async def create_equipment(
@@ -30,6 +31,9 @@ async def create_equipment(
         service (IEquipmentService, optional): The injected equipment dependency.
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
 
+    Raises:
+        HTTPException: 403 if unauthorized.
+
     Returns:
         dict: The created equipment attributes.
     """
@@ -43,7 +47,7 @@ async def create_equipment(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     extended_equipment_data = EquipmentBroker(
         equipment_owner_id=user_uuid,
         **equipment.model_dump(),
@@ -114,6 +118,7 @@ async def update_equipment(
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
 
     Raises:
+        HTTPException: 403 if unauthorized.
         HTTPException: 404 if equipment does not exist.
 
     Returns:
@@ -129,9 +134,9 @@ async def update_equipment(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     if equipment_data := await service.get_equipment_by_id(equipment_id=equipment_id):
-        if(str(equipment_data.equipment_owner_id) != user_uuid):
+        if str(equipment_data.equipment_owner_id) != user_uuid:
             raise HTTPException(status_code=403, detail="Unauthorized")
 
         extended_updated_equipment = EquipmentBroker(
@@ -165,8 +170,9 @@ async def delete_equipment(
         equipment_id (int): The equipment id.
         service (IEquipmentService, optional): The injected equipment dependency.
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
-        
+
     Raises:
+        HTTPException: 403 if unauthorized.
         HTTPException: 404 if equipment does not exist.
     """
     token = credentials.credentials
@@ -179,22 +185,24 @@ async def delete_equipment(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     if equipment_data := await service.get_equipment_by_id(equipment_id=equipment_id):
-        if(str(equipment_data.equipment_owner_id) != user_uuid):
+        if str(equipment_data.equipment_owner_id) != user_uuid:
             raise HTTPException(status_code=403, detail="Unauthorized")
 
     if await service.get_equipment_by_id(equipment_id):
         await service.delete_equipment(equipment_id)
         return
-    
+
     raise HTTPException(
         status_code=404,
         detail="Equipment not found",
     )
 
 
-@router.get("/category/{category_id}", response_model=Iterable[Equipment], status_code=200)
+@router.get(
+    "/category/{category_id}", response_model=Iterable[Equipment], status_code=200
+)
 @inject
 async def get_all_equipment_by_category_id(
     category_id: int,
@@ -213,7 +221,9 @@ async def get_all_equipment_by_category_id(
     return equipment_list
 
 
-@router.get("/subcategory/{subcategory_id}", response_model=Iterable[Equipment], status_code=200)
+@router.get(
+    "/subcategory/{subcategory_id}", response_model=Iterable[Equipment], status_code=200
+)
 @inject
 async def get_all_equipment_by_subcategory_id(
     subcategory_id: int,

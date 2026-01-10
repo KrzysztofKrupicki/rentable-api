@@ -90,7 +90,9 @@ class EquipmentReviewRepository(IEquipmentReviewRepository):
         result = await database.fetch_val(query)
         return float(result) if result is not None else None
 
-    async def add_equipment_review(self, data: EquipmentReviewIn) -> EquipmentReview | None:
+    async def add_equipment_review(
+        self, data: EquipmentReviewIn
+    ) -> EquipmentReview | None:
         """The method adding new equipment review to the database.
 
         Args:
@@ -102,7 +104,11 @@ class EquipmentReviewRepository(IEquipmentReviewRepository):
         query = insert(equipment_review_table).values(**data.model_dump())
         new_equipment_review_id = await database.execute(query)
         new_equipment_review = await self._get_by_id(new_equipment_review_id)
-        return EquipmentReview(**dict(new_equipment_review)) if new_equipment_review else None
+        return (
+            EquipmentReview(**dict(new_equipment_review))
+            if new_equipment_review
+            else None
+        )
 
     async def delete_equipment_review(self, equipment_review_id: int) -> bool:
         """The method removing equipment review from the database.

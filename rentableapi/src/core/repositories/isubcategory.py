@@ -29,7 +29,7 @@ class ISubcategoryRepository(ABC):
         """
 
     @abstractmethod
-    async def get_subcategories_by_category_id(
+    async def get_all_subcategories_by_category_id(
         self, category_id: int
     ) -> Iterable[Subcategory] | None:
         """The abstract method getting all subcategories by provided category id.

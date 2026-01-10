@@ -137,7 +137,30 @@ equipment_review_table = sqlalchemy.Table(
     sqlalchemy.Column("comment", sqlalchemy.String, nullable=True),
 )
 
-
+user_review_table = sqlalchemy.Table(
+    "user_reviews",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True),
+    sqlalchemy.Column(
+        "reviewer_id",
+        UUID(as_uuid=True),
+        sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=False,
+    ),
+    sqlalchemy.Column(
+        "reviewed_user_id",
+        UUID(as_uuid=True),
+        sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=False,
+    ),
+    sqlalchemy.Column(
+        "rating",
+        sqlalchemy.Integer,
+        sqlalchemy.CheckConstraint("rating >= 0 AND rating <= 10"),
+        nullable=False,
+    ),
+    sqlalchemy.Column("comment", sqlalchemy.String, nullable=True),
+)
 
 
 db_uri = (

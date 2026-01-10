@@ -45,7 +45,7 @@ class SubcategoryRepository(ISubcategoryRepository):
         subcategory = await self._get_by_id(subcategory_id)
         return Subcategory(**dict(subcategory)) if subcategory else None
 
-    async def get_subcategories_by_category_id(
+    async def get_all_subcategories_by_category_id(
         self, category_id: int
     ) -> Iterable[Subcategory] | None:
         """The method getting all subcategories by provided category id.

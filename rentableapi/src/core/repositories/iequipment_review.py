@@ -73,7 +73,9 @@ class IEquipmentReviewRepository(ABC):
         """
 
     @abstractmethod
-    async def add_equipment_review(self, data: EquipmentReviewIn) -> EquipmentReview | None:
+    async def add_equipment_review(
+        self, data: EquipmentReviewIn
+    ) -> EquipmentReview | None:
         """The abstract method adding new equipment review to the data storage.
 
         Args:
