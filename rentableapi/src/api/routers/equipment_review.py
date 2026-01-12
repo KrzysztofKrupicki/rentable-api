@@ -19,7 +19,7 @@ from src.infrastructure.services.iequipment_review import IEquipmentReviewServic
 from src.infrastructure.utils import consts
 
 bearer_scheme = HTTPBearer()
-router = APIRouter()
+router = APIRouter(tags=["Equipment Review"])
 
 
 @router.post("/create", response_model=EquipmentReview, status_code=201)

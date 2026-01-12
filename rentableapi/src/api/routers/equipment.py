@@ -13,7 +13,7 @@ from src.infrastructure.dto.equipmentdto import EquipmentDTO
 from src.infrastructure.services.iequipment import IEquipmentService
 from src.infrastructure.utils import consts
 
-router = APIRouter()
+router = APIRouter(tags=["Equipment"])
 bearer_scheme = HTTPBearer()
 
 

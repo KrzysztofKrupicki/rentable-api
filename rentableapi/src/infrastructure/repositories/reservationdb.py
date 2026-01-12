@@ -45,7 +45,9 @@ class ReservationRepository(IReservationRepository):
         reservation = await self._get_by_id(reservation_id)
         return Reservation(**dict(reservation)) if reservation else None
 
-    async def get_all_reservations_by_user(self, user_id: UUID4) -> Iterable[Reservation]:
+    async def get_all_reservations_by_user(
+        self, user_id: UUID4
+    ) -> Iterable[Reservation]:
         """The method getting all reservations from the database based on its user ID.
 
         Args:
@@ -58,7 +60,9 @@ class ReservationRepository(IReservationRepository):
         reservations = await database.fetch_all(query)
         return [Reservation(**dict(reservation)) for reservation in reservations]
 
-    async def get_all_reservations_by_equipment_id(self, equipment_id: int) -> Iterable[Reservation]:
+    async def get_all_reservations_by_equipment_id(
+        self, equipment_id: int
+    ) -> Iterable[Reservation]:
         """The method getting all reservations from the database based on its equipment ID.
 
         Args:
@@ -67,7 +71,9 @@ class ReservationRepository(IReservationRepository):
         Returns:
             Iterable[Reservation]: The collection of the all reservations.
         """
-        query = select(reservation_table).where(reservation_table.c.equipment_id == equipment_id)
+        query = select(reservation_table).where(
+            reservation_table.c.equipment_id == equipment_id
+        )
         reservations = await database.fetch_all(query)
         return [Reservation(**dict(reservation)) for reservation in reservations]
 
@@ -92,7 +98,10 @@ class ReservationRepository(IReservationRepository):
                 reservation_table.c.status,
                 reservation_table.c.total_price,
             )
-            .join(equipment_table, reservation_table.c.equipment_id == equipment_table.c.id)
+            .join(
+                equipment_table,
+                reservation_table.c.equipment_id == equipment_table.c.id,
+            )
             .where(equipment_table.c.category_id == category_id)
         )
         reservations = await database.fetch_all(query)
@@ -119,7 +128,10 @@ class ReservationRepository(IReservationRepository):
                 reservation_table.c.status,
                 reservation_table.c.total_price,
             )
-            .join(equipment_table, reservation_table.c.equipment_id == equipment_table.c.id)
+            .join(
+                equipment_table,
+                reservation_table.c.equipment_id == equipment_table.c.id,
+            )
             .where(equipment_table.c.subcategory_id == subcategory_id)
         )
         reservations = await database.fetch_all(query)
@@ -134,7 +146,7 @@ class ReservationRepository(IReservationRepository):
         data_dict = data.model_dump()
         if data_dict.get("status") is None:
             del data_dict["status"]
-            
+
         query = insert(reservation_table).values(**data_dict)
         new_reservation_id = await database.execute(query)
         new_reservation = await self._get_by_id(new_reservation_id)
@@ -160,7 +172,11 @@ class ReservationRepository(IReservationRepository):
             )
             await database.execute(query)
             updated_reservation = await self._get_by_id(reservation_id)
-            return Reservation(**dict(updated_reservation)) if updated_reservation else None
+            return (
+                Reservation(**dict(updated_reservation))
+                if updated_reservation
+                else None
+            )
         return None
 
     async def delete_reservation(self, reservation_id: int) -> bool:
@@ -173,7 +189,9 @@ class ReservationRepository(IReservationRepository):
             bool: Success of the operation.
         """
         if await self._get_by_id(reservation_id):
-            query = delete(reservation_table).where(reservation_table.c.id == reservation_id)
+            query = delete(reservation_table).where(
+                reservation_table.c.id == reservation_id
+            )
             await database.execute(query)
             return True
         return False
@@ -190,7 +208,7 @@ class ReservationRepository(IReservationRepository):
         query = (
             select(
                 reservation_table.c.equipment_id,
-                func.count(reservation_table.c.id).label("count")
+                func.count(reservation_table.c.id).label("count"),
             )
             .where(reservation_table.c.status == "finished")
             .group_by(reservation_table.c.equipment_id)
@@ -209,5 +227,31 @@ class ReservationRepository(IReservationRepository):
         Returns:
             Record | None: The reservation record if exists.
         """
-        query = select(reservation_table).where(reservation_table.c.id == reservation_id)
+        query = select(reservation_table).where(
+            reservation_table.c.id == reservation_id
+        )
         return await database.fetch_one(query)
+
+    async def calculate_total_price(
+        self, equipment_id: int, start_date: date, end_date: date
+    ) -> float:
+        """The method calculating total price of the reservation.
+
+        Args:
+            equipment_id (int): The id of the equipment.
+            start_date (date): The start date of the reservation.
+            end_date (date): The end date of the reservation.
+
+        Returns:
+            float: The total price of the reservation.
+        """
+        query = select(equipment_table.c.price_per_day).where(
+            equipment_table.c.id == equipment_id
+        )
+        equipment = await database.fetch_one(query)
+
+        if not equipment:
+            return 0.0
+
+        days = (end_date - start_date).days
+        return float(days * equipment["price_per_day"])

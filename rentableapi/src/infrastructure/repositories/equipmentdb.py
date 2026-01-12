@@ -7,7 +7,7 @@ from sqlalchemy import delete, insert, select, update
 
 from src.core.domain.equipment import Equipment, EquipmentIn
 from src.core.repositories.iequipment import IEquipmentRepository
-from src.db import database, equipment_table
+from src.db import database, equipment_table, subcategory_table
 
 
 class EquipmentRepository(IEquipmentRepository):
@@ -19,7 +19,10 @@ class EquipmentRepository(IEquipmentRepository):
         Returns:
             Iterable[Equipment]: The collection of the all equipments.
         """
-        query = select(equipment_table)
+        query = select(equipment_table, subcategory_table.c.category_id).join(
+            subcategory_table,
+            equipment_table.c.subcategory_id == subcategory_table.c.id,
+        )
         equipments = await database.fetch_all(query)
         return [Equipment(**dict(equipment)) for equipment in equipments]
 
@@ -46,8 +49,13 @@ class EquipmentRepository(IEquipmentRepository):
         Returns:
             Iterable[Equipment]: The collection of the all equipments.
         """
-        query = select(equipment_table).where(
-            equipment_table.c.category_id == category_id
+        query = (
+            select(equipment_table, subcategory_table.c.category_id)
+            .join(
+                subcategory_table,
+                equipment_table.c.subcategory_id == subcategory_table.c.id,
+            )
+            .where(subcategory_table.c.category_id == category_id)
         )
         equipments = await database.fetch_all(query)
         return [Equipment(**dict(equipment)) for equipment in equipments]
@@ -63,8 +71,13 @@ class EquipmentRepository(IEquipmentRepository):
         Returns:
             Iterable[Equipment]: The collection of the all equipments.
         """
-        query = select(equipment_table).where(
-            equipment_table.c.subcategory_id == subcategory_id
+        query = (
+            select(equipment_table, subcategory_table.c.category_id)
+            .join(
+                subcategory_table,
+                equipment_table.c.subcategory_id == subcategory_table.c.id,
+            )
+            .where(equipment_table.c.subcategory_id == subcategory_id)
         )
         equipments = await database.fetch_all(query)
         return [Equipment(**dict(equipment)) for equipment in equipments]
@@ -130,5 +143,12 @@ class EquipmentRepository(IEquipmentRepository):
         Returns:
             Record | None: The equipment record if exists.
         """
-        query = select(equipment_table).where(equipment_table.c.id == equipment_id)
+        query = (
+            select(equipment_table, subcategory_table.c.category_id)
+            .join(
+                subcategory_table,
+                equipment_table.c.subcategory_id == subcategory_table.c.id,
+            )
+            .where(equipment_table.c.id == equipment_id)
+        )
         return await database.fetch_one(query)

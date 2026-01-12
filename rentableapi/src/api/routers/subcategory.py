@@ -14,7 +14,7 @@ from src.infrastructure.services.isubcategory import ISubcategoryService
 from src.infrastructure.utils import consts
 
 bearer_scheme = HTTPBearer()
-router = APIRouter()
+router = APIRouter(tags=["Subcategory"])
 
 
 @router.post("/create", response_model=Subcategory, status_code=201)

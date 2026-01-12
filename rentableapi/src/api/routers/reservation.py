@@ -10,10 +10,11 @@ from pydantic import UUID4
 
 from src.container import Container
 from src.core.domain.reservation import Reservation, ReservationBroker, ReservationIn
+from src.infrastructure.services.iequipment import IEquipmentService
 from src.infrastructure.services.ireservation import IReservationService
 from src.infrastructure.utils import consts
 
-router = APIRouter()
+router = APIRouter(tags=["Reservation"])
 bearer_scheme = HTTPBearer()
 
 
@@ -44,9 +45,16 @@ async def create_reservation(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
+    total_price = await service.calculate_total_price(
+        equipment_id=reservation.equipment_id,
+        start_date=reservation.start_date,
+        end_date=reservation.end_date,
+    )
+
     extended_reservation_data = ReservationBroker(
         user_id=user_uuid,
+        total_price=total_price,
         **reservation.model_dump(),
     )
 
@@ -101,6 +109,9 @@ async def update_reservation(
     reservation_id: int,
     reservation: ReservationIn,
     service: IReservationService = Depends(Provide[Container.reservation_service]),
+    equipment_service: IEquipmentService = Depends(
+        Provide[Container.equipment_service]
+    ),
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> dict:
     """An endpoint for updating reservation.
@@ -109,6 +120,7 @@ async def update_reservation(
         reservation_id (int): The reservation id.
         reservation (ReservationIn): The reservation input data.
         service (IReservationService, optional): The injected reservation service.
+        equipment_service (IEquipmentService, optional): The injected equipment service.
         credentials (HTTPAuthorizationCredentials, optional): The credentials.
 
     Raises:
@@ -127,9 +139,20 @@ async def update_reservation(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
-    if reservation_data := await service.get_reservation_by_id(reservation_id=reservation_id):
-        if(str(reservation_data.user_id) != user_uuid):
+
+    if reservation_data := await service.get_reservation_by_id(
+        reservation_id=reservation_id
+    ):
+        is_owner = str(reservation_data.user_id) == user_uuid
+
+        equipment = await equipment_service.get_equipment_by_id(
+            reservation_data.equipment_id
+        )
+        is_equipment_owner = False
+        if equipment:
+            is_equipment_owner = str(equipment.equipment_owner_id) == user_uuid
+
+        if not (is_owner or is_equipment_owner):
             raise HTTPException(status_code=403, detail="Unauthorized")
 
         extended_updated_reservation = ReservationBroker(
@@ -177,15 +200,17 @@ async def delete_reservation(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
-    if reservation_data := await service.get_reservation_by_id(reservation_id=reservation_id):
-        if(str(reservation_data.user_id) != user_uuid):
+
+    if reservation_data := await service.get_reservation_by_id(
+        reservation_id=reservation_id
+    ):
+        if str(reservation_data.user_id) != user_uuid:
             raise HTTPException(status_code=403, detail="Unauthorized")
 
     if await service.get_reservation_by_id(reservation_id):
         await service.delete_reservation(reservation_id)
         return
-    
+
     raise HTTPException(
         status_code=404,
         detail="Reservation not found",
@@ -211,7 +236,9 @@ async def get_all_reservations_by_user(
     return reservation_list
 
 
-@router.get("/category/{category_id}", response_model=Iterable[Reservation], status_code=200)
+@router.get(
+    "/category/{category_id}", response_model=Iterable[Reservation], status_code=200
+)
 @inject
 async def get_all_reservation_by_category_id(
     category_id: int,
@@ -230,7 +257,11 @@ async def get_all_reservation_by_category_id(
     return reservation_list
 
 
-@router.get("/subcategory/{subcategory_id}", response_model=Iterable[Reservation], status_code=200)
+@router.get(
+    "/subcategory/{subcategory_id}",
+    response_model=Iterable[Reservation],
+    status_code=200,
+)
 @inject
 async def get_all_reservation_by_subcategory_id(
     subcategory_id: int,
@@ -245,11 +276,15 @@ async def get_all_reservation_by_subcategory_id(
     Returns:
         Iterable[dict]: The list of reservation DTOs.
     """
-    reservation_list = await service.get_all_reservation_by_subcategory_id(subcategory_id)
+    reservation_list = await service.get_all_reservation_by_subcategory_id(
+        subcategory_id
+    )
     return reservation_list
 
 
-@router.get("/equipment/{equipment_id}", response_model=Iterable[Reservation], status_code=200)
+@router.get(
+    "/equipment/{equipment_id}", response_model=Iterable[Reservation], status_code=200
+)
 @inject
 async def get_all_reservations_by_equipment_id(
     equipment_id: int,

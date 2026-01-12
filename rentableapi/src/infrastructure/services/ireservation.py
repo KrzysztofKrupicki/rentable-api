@@ -2,24 +2,27 @@
 
 from abc import ABC, abstractmethod
 from typing import Iterable
+from datetime import date
 
 from pydantic import UUID4
 
 from src.core.domain.reservation import Reservation, ReservationIn
 
+
 class IReservationService(ABC):
     """An abstract class representing protocol of reservation service."""
+
     @abstractmethod
     async def get_reservation_by_id(self, reservation_id: int) -> Reservation | None:
         """The abstract getting a reservation from the repository.
-        
+
         Args:
             reservation_id (int): The id of the reservation.
-        
+
         Returns:
             Reservation | None: The reservation data if exists.
         """
-    
+
     @abstractmethod
     async def get_all_reservations(self) -> Iterable[Reservation]:
         """The abstract getting all reservations from the repository.
@@ -29,7 +32,9 @@ class IReservationService(ABC):
         """
 
     @abstractmethod
-    async def get_all_reservations_by_user(self, user_id: UUID4) -> Iterable[Reservation]:
+    async def get_all_reservations_by_user(
+        self, user_id: UUID4
+    ) -> Iterable[Reservation]:
         """The method getting all reservations from the repository based on its user ID.
 
         Args:
@@ -64,7 +69,7 @@ class IReservationService(ABC):
         Returns:
             Iterable[Reservation]: The collection of the all reservations.
         """
-    
+
     @abstractmethod
     async def get_all_reservations_by_equipment_id(
         self, equipment_id: int
@@ -81,7 +86,7 @@ class IReservationService(ABC):
     @abstractmethod
     async def add_reservation(self, data: ReservationIn) -> Reservation | None:
         """The abstract adding new reservation to the repository.
-        
+
         Args:
             data (ReservationIn): The attributes of the reservation.
 
@@ -90,13 +95,15 @@ class IReservationService(ABC):
         """
 
     @abstractmethod
-    async def update_reservation(self, reservation_id: int, data: ReservationIn) -> Reservation | None:
+    async def update_reservation(
+        self, reservation_id: int, data: ReservationIn
+    ) -> Reservation | None:
         """The abstract updating reservation data in the repository.
-        
+
         Args:
             reservation_id (int): The reservation id.
             data (ReservationIn): The attributes of the reservation.
-        
+
         Returns:
             Reservation | None: The updated reservation.
         """
@@ -104,14 +111,14 @@ class IReservationService(ABC):
     @abstractmethod
     async def delete_reservation(self, reservation_id: int) -> bool:
         """The abstract deleting reservation from the repository.
-        
+
         Args:
             reservation_id (int): The reservation id.
 
         Returns:
             bool: The success of the operation.
         """
-    
+
     @abstractmethod
     async def get_most_rented_equipment_ids(self, limit: int) -> Iterable[dict]:
         """The method getting most rented equipment IDs from the repository.
@@ -121,4 +128,19 @@ class IReservationService(ABC):
 
         Returns:
             Iterable[dict]: The collection of the most rented equipment IDs with their finished reservation count.
+        """
+
+    @abstractmethod
+    async def calculate_total_price(
+        self, equipment_id: int, start_date: date, end_date: date
+    ) -> float:
+        """The method calculating total price of the reservation.
+
+        Args:
+            equipment_id (int): The id of the equipment.
+            start_date (date): The start date of the reservation.
+            end_date (date): The end date of the reservation.
+
+        Returns:
+            float: The total price of the reservation.
         """

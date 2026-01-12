@@ -14,7 +14,8 @@ from src.infrastructure.services.icategory import ICategoryService
 from src.infrastructure.utils import consts
 
 bearer_scheme = HTTPBearer()
-router = APIRouter()
+router = APIRouter(tags=["Category"])
+
 
 @router.post("/create", response_model=Category, status_code=201)
 @inject
@@ -24,7 +25,7 @@ async def create_category(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> dict:
     """An endpoint for adding new category.
-    
+
     Args:
         category (CategoryIn): The category data.
         service (ICategoryService, optional): The injected service dependency.
@@ -44,7 +45,7 @@ async def create_category(
 
     if not user_uuid:
         raise HTTPException(status_code=403, detail="Unauthorized")
-    
+
     new_category = await service.add_category(category)
 
     return new_category.model_dump() if new_category else {}
@@ -67,6 +68,7 @@ async def get_all_categories(
     categories = await service.get_all_categories()
     return categories
 
+
 @router.get("/{category_id}", response_model=CategoryDTO, status_code=200)
 @inject
 async def get_category_by_id(
@@ -85,7 +87,7 @@ async def get_category_by_id(
 
     if category := await service.get_category_by_id(category_id):
         return category.model_dump()
-    
+
     raise HTTPException(status_code=404, detail="Category not found")
 
 
@@ -97,7 +99,7 @@ async def update_category(
     service: ICategoryService = Depends(Provide[Container.category_service]),
 ) -> dict:
     """An endpoint for updating category data.
-    
+
     Args:
         category_id (int): The if of the category.
         updated_category (CategoryIn): The updated category details.
@@ -125,19 +127,19 @@ async def delete_category(
     service: ICategoryService = Depends(Provide[Container.category_service]),
 ) -> None:
     """An endpoint for deleting categories.
-    
+
     Args:
         category_id (int): The id of the category.
         servce (ICategoryService): The injected service dependency.
 
     Raises:
         HTTPException: 404 if category does not exist.
-    
+
     Returns:
         dict: Empty if operation finished.
     """
     if await service.get_category_by_id(category_id=category_id):
         await service.delete_category(category_id)
         return
-    
+
     raise HTTPException(status_code=404, detail="Category not found")

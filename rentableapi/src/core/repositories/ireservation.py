@@ -129,3 +129,18 @@ class IReservationRepository(ABC):
         Returns:
             Iterable[dict]: The collection of the all equipment IDs.
         """
+
+    @abstractmethod
+    async def calculate_total_price(
+        self, equipment_id: int, start_date: date, end_date: date
+    ) -> float:
+        """The abstract method calculating total price of the reservation.
+
+        Args:
+            equipment_id (int): The id of the equipment.
+            start_date (date): The start date of the reservation.
+            end_date (date): The end date of the reservation.
+
+        Returns:
+            float: The total price of the reservation.
+        """

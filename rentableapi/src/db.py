@@ -57,12 +57,6 @@ equipment_table = sqlalchemy.Table(
     sqlalchemy.Column("name", sqlalchemy.String, nullable=False),
     sqlalchemy.Column("description", sqlalchemy.String, nullable=True),
     sqlalchemy.Column(
-        "category_id",
-        sqlalchemy.Integer,
-        sqlalchemy.ForeignKey("categories.id", ondelete="SET NULL"),
-        nullable=False,
-    ),
-    sqlalchemy.Column(
         "subcategory_id",
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("subcategories.id", ondelete="SET NULL"),

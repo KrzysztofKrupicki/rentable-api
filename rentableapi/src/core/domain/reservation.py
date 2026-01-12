@@ -6,13 +6,13 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, UUID4
 
+
 class ReservationIn(BaseModel):
     """Model representing reservation's DTO attributes."""
 
     equipment_id: int
     start_date: date
     end_date: date
-    total_price: float
     status: str = "pending"
     """
     possible statuses:
@@ -23,10 +23,13 @@ class ReservationIn(BaseModel):
     "finished"
     """
 
+
 class ReservationBroker(ReservationIn):
     """Model representing reservation's attributes in the database."""
 
     user_id: UUID4
+    total_price: float
+
 
 class Reservation(ReservationBroker):
     """Model representing reservation's attributes in the database."""

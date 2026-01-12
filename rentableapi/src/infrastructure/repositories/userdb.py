@@ -1,6 +1,5 @@
 """A repository for user entity."""
 
-
 from typing import Any
 
 from pydantic import UUID4
@@ -44,9 +43,7 @@ class UserRepository(IUserRepository):
             Any | None: The user object if exists.
         """
 
-        query = user_table \
-            .select() \
-            .where(user_table.c.id == uuid)
+        query = user_table.select().where(user_table.c.id == uuid)
         user = await database.fetch_one(query)
 
         return user
@@ -61,9 +58,7 @@ class UserRepository(IUserRepository):
             Any | None: The user object if exists.
         """
 
-        query = user_table \
-            .select() \
-            .where(user_table.c.email == email)
+        query = user_table.select().where(user_table.c.email == email)
         user = await database.fetch_one(query)
 
         return user

@@ -13,7 +13,7 @@ from src.core.domain.user_review import UserReview, UserReviewIn, UserReviewBrok
 from src.infrastructure.services.iuser_review import IUserReviewService
 from src.infrastructure.utils import consts
 
-router = APIRouter()
+router = APIRouter(tags=["User Review"])
 bearer_scheme = HTTPBearer()
 
 

@@ -12,7 +12,8 @@ from src.infrastructure.dto.tokendto import TokenDTO
 from src.infrastructure.dto.userdto import UserDTO
 from src.infrastructure.services.iuser import IUserService
 
-router = APIRouter()
+router = APIRouter(tags=["User"])
+
 
 @router.post("/register", response_model=UserDTO, status_code=201)
 @inject
