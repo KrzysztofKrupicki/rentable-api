@@ -33,7 +33,7 @@ subcategory_table = sqlalchemy.Table(
     sqlalchemy.Column(
         "category_id",
         sqlalchemy.ForeignKey("categories.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
 )
 
@@ -60,13 +60,13 @@ equipment_table = sqlalchemy.Table(
         "subcategory_id",
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("subcategories.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "equipment_owner_id",
         UUID(as_uuid=True),
         sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column("price_per_day", sqlalchemy.Integer, nullable=False),
     sqlalchemy.Column("is_available", sqlalchemy.Boolean, nullable=False),
@@ -80,13 +80,13 @@ reservation_table = sqlalchemy.Table(
         "user_id",
         UUID(as_uuid=True),
         sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "equipment_id",
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("equipment.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column("start_date", sqlalchemy.Date, nullable=False),
     sqlalchemy.Column("end_date", sqlalchemy.Date, nullable=False),
@@ -114,13 +114,13 @@ equipment_review_table = sqlalchemy.Table(
         "reviewer_id",
         UUID(as_uuid=True),
         sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "equipment_id",
         sqlalchemy.Integer,
         sqlalchemy.ForeignKey("equipment.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "rating",
@@ -139,13 +139,13 @@ user_review_table = sqlalchemy.Table(
         "reviewer_id",
         UUID(as_uuid=True),
         sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "reviewed_user_id",
         UUID(as_uuid=True),
         sqlalchemy.ForeignKey("users.id", ondelete="SET NULL"),
-        nullable=False,
+        nullable=True,
     ),
     sqlalchemy.Column(
         "rating",

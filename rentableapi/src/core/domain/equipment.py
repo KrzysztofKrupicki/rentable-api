@@ -25,5 +25,5 @@ class Equipment(EquipmentBroker):
     """Model representing equipment's attributes in the database."""
 
     id: int
-    category_id: int
+    category_id: Optional[int]
     model_config = ConfigDict(from_attributes=True, extra="ignore")

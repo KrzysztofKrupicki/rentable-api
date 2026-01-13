@@ -155,8 +155,15 @@ async def update_reservation(
         if not (is_owner or is_equipment_owner):
             raise HTTPException(status_code=403, detail="Unauthorized")
 
+        total_price = await service.calculate_total_price(
+            equipment_id=reservation.equipment_id,
+            start_date=reservation.start_date,
+            end_date=reservation.end_date,
+        )
+
         extended_updated_reservation = ReservationBroker(
             user_id=user_uuid,
+            total_price=total_price,
             **reservation.model_dump(),
         )
 

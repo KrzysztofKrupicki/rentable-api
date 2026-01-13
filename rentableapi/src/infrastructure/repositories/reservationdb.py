@@ -102,7 +102,11 @@ class ReservationRepository(IReservationRepository):
                 equipment_table,
                 reservation_table.c.equipment_id == equipment_table.c.id,
             )
-            .where(equipment_table.c.category_id == category_id)
+            .join(
+                subcategory_table,
+                equipment_table.c.subcategory_id == subcategory_table.c.id,
+            )
+            .where(subcategory_table.c.category_id == category_id)
         )
         reservations = await database.fetch_all(query)
         return [Reservation(**dict(reservation)) for reservation in reservations]
