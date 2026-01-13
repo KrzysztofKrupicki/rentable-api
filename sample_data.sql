@@ -10,42 +10,42 @@ INSERT INTO users (id, email, password) VALUES
 ('479a60fe-5439-4678-9d6e-18e93e39d7cd', 'tomasz.debowy@gmail.com', '$2a$12$0E3uHziU.07AjjBfESlBMOVcGdc9vQdxn00Evdmn3JT/AoKpAHm3.');
 
 -- KATEGORIE
-INSERT INTO categories (id, name, description) VALUES 
-(1, 'Aparaty', 'Body lustrzanek, bezlusterkowców i średni format'),
-(2, 'Obiektywy', 'Optyka stałoogniskowa, zoomy i anamorficzne'),
-(3, 'Oświetlenie', 'Lampy błyskowe, światło ciągłe i modyfikatory'),
-(4, 'Audio', 'Mikrofony, rejestratory i systemy bezprzewodowe'),
-(5, 'Stabilizacja', 'Gimbale, statywy i slidery'),
-(6, 'Drony', 'Bezzałogowe statki powietrzne i akcesoria'),
-(7, 'Akcesoria', 'Dodatki, filtry i monitory');
+INSERT INTO categories (name, description) VALUES 
+('Aparaty', 'Body lustrzanek, bezlusterkowców i średni format'),
+('Obiektywy', 'Optyka stałoogniskowa, zoomy i anamorficzne'),
+('Oświetlenie', 'Lampy błyskowe, światło ciągłe i modyfikatory'),
+('Audio', 'Mikrofony, rejestratory i systemy bezprzewodowe'),
+('Stabilizacja', 'Gimbale, statywy i slidery'),
+('Drony', 'Bezzałogowe statki powietrzne i akcesoria'),
+('Akcesoria', 'Dodatki, filtry i monitory');
 
 -- PODKATEGORIE
-INSERT INTO subcategories (id, name, description, category_id) VALUES 
-(1, 'Bezlusterkowce', 'Aparaty z wymienną optyką bez lustra', 1),
-(2, 'Lustrzanki', 'Klasyczne lustrzanki cyfrowe', 1),
-(3, 'Stałoogniskowe', 'Obiektywy o stałej ogniskowej', 2),
-(4, 'Zoomy', 'Obiektywy ze zmienną ogniskową', 2),
-(5, 'Lampy', 'Mocne lampy LED', 3),
-(6, 'Mikrofony krawatowe', 'Dyskretne mikrofony do wywiadów', 4),
-(7, 'Gimbale ręczne', 'Stabilizatory do aparatów i telefonów', 5),
-(8, 'Statywy wideo', 'Ciężkie statywy z głowicą olejową', 5),
-(9, 'Drony FPV', 'Drony do szybkich ujęć dynamicznych', 6),
-(10, 'Drony klasyczne', 'Klasyczne drony do fotografii z powietrza', 6),
-(11, 'Monitoring', 'Monitory podglądowe', 7),
-(12, 'Kamery sportowe', 'Małe i poręczne kamery 4K', 1);
+INSERT INTO subcategories (name, description, category_id) VALUES 
+('Bezlusterkowce', 'Aparaty z wymienną optyką bez lustra', 1),
+('Lustrzanki', 'Klasyczne lustrzanki cyfrowe', 1),
+('Stałoogniskowe', 'Obiektywy o stałej ogniskowej', 2),
+('Zoomy', 'Obiektywy ze zmienną ogniskową', 2),
+('Lampy', 'Mocne lampy LED', 3),
+('Mikrofony krawatowe', 'Dyskretne mikrofony do wywiadów', 4),
+('Gimbale ręczne', 'Stabilizatory do aparatów i telefonów', 5),
+('Statywy wideo', 'Ciężkie statywy z głowicą olejową', 5),
+('Drony FPV', 'Drony do szybkich ujęć dynamicznych', 6),
+('Drony klasyczne', 'Klasyczne drony do fotografii z powietrza', 6),
+('Monitoring', 'Monitory podglądowe', 7),
+('Kamery sportowe', 'Małe i poręczne kamery 4K', 1);
 
 -- SPRZĘT
-INSERT INTO equipment (id, name, description, subcategory_id, equipment_owner_id, price_per_day, is_available) VALUES 
-(1, 'Sony Alpha 7S III', 'Król nocnych zdjęć i wideo. 4K 120fps.', 1, '93a133f3-09f0-453a-975a-14dc018a2692', 300, true),
-(2, 'Tamron 28-75mm f/2.8 G2 (Sony E)', 'Uniwersalny zoom na reportaże.', 4, '921b0e63-69db-4792-8a9a-2c8951eda72a', 80, true),
-(3, 'Aputure LS 600d Pro', 'Potężna lampa LED, Sidus Link.', 5, 'c7c295d5-9455-4484-8206-9f21b9ba50f9', 250, true),
-(4, 'DJI Mic 2', 'Zestaw do wywiadów, 32-bit float.', 6, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 90, true),
-(5, 'DJI RS 4 Pro (Combo)', 'Najnowszy stabilizator od DJI.', 7, '93a133f3-09f0-453a-975a-14dc018a2692', 180, true),
-(6, 'DJI RS 3 Pro (Combo)', 'Stabilizator z silnikiem Focus.', 7, '93a133f3-09f0-453a-975a-14dc018a2692', 120, false),
-(7, 'Sachtler Ace XL', 'Statyw z głowicą olejową.', 8, 'c7c295d5-9455-4484-8206-9f21b9ba50f9', 100, false),
-(8, 'DJI Avata 2 (Fly More Combo)', 'Dron FPV, gogle Goggles 3.', 9, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 220, true),
-(9, 'Atomos Ninja V+', 'Monitor/Recorder ProRes RAW.', 11, '921b0e63-69db-4792-8a9a-2c8951eda72a', 120, false),
-(10, 'DJI Osmo Action 4', 'Pancerna kamera sportowa.', 12, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 80, true);
+INSERT INTO equipment (name, description, subcategory_id, equipment_owner_id, price_per_day, is_available) VALUES 
+('Sony Alpha 7S III', 'Król nocnych zdjęć i wideo. 4K 120fps.', 1, '93a133f3-09f0-453a-975a-14dc018a2692', 300, true),
+('Tamron 28-75mm f/2.8 G2 (Sony E)', 'Uniwersalny zoom na reportaże.', 4, '921b0e63-69db-4792-8a9a-2c8951eda72a', 80, true),
+('Aputure LS 600d Pro', 'Potężna lampa LED, Sidus Link.', 5, 'c7c295d5-9455-4484-8206-9f21b9ba50f9', 250, true),
+('DJI Mic 2', 'Zestaw do wywiadów, 32-bit float.', 6, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 90, true),
+('DJI RS 4 Pro (Combo)', 'Najnowszy stabilizator od DJI.', 7, '93a133f3-09f0-453a-975a-14dc018a2692', 180, true),
+('DJI RS 3 Pro (Combo)', 'Stabilizator z silnikiem Focus.', 7, '93a133f3-09f0-453a-975a-14dc018a2692', 120, false),
+('Sachtler Ace XL', 'Statyw z głowicą olejową.', 8, 'c7c295d5-9455-4484-8206-9f21b9ba50f9', 100, false),
+('DJI Avata 2 (Fly More Combo)', 'Dron FPV, gogle Goggles 3.', 9, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 220, true),
+('Atomos Ninja V+', 'Monitor/Recorder ProRes RAW.', 11, '921b0e63-69db-4792-8a9a-2c8951eda72a', 120, false),
+('DJI Osmo Action 4', 'Pancerna kamera sportowa.', 12, '479a60fe-5439-4678-9d6e-18e93e39d7cd', 80, true);
 
 -- REZERWACJE
 INSERT INTO reservations (user_id, equipment_id, start_date, end_date, status, total_price) VALUES 
